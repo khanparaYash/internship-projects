@@ -1,11 +1,15 @@
 package in.yashKhanpara.Project_2_Employee_Management.entity;
+import java.time.LocalDate;
 
 public class Employee {
     private Long id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
+    private String phone;
     private String department;
-    private double salary;
+    private Double salary;
+    private LocalDate joiningDate;
 
     public Long getId() {
         return id;
@@ -15,12 +19,20 @@ public class Employee {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -31,6 +43,14 @@ public class Employee {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getDepartment() {
         return department;
     }
@@ -39,11 +59,19 @@ public class Employee {
         this.department = department;
     }
 
-    public double getSalary() {
+    public Double getSalary() {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(Double salary) {
         this.salary = salary;
+    }
+
+    public LocalDate getJoiningDate() {
+        return joiningDate;
+    }
+
+    public void setJoiningDate(LocalDate joiningDate) {
+        this.joiningDate = joiningDate;
     }
 }

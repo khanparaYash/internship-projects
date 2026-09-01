@@ -20,8 +20,22 @@ public class EmployeeService {
         return repository.save(employee);
     }
 
-    public List<Employee> getAll() {
-        return repository.findAll();
+    public List<Employee> getAll(int page, int size) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be negative");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        List<Employee> allEmployees = repository.findAll();
+        int fromIndex = Math.min(page * size, allEmployees.size());
+        int toIndex = Math.min(fromIndex + size, allEmployees.size());
+        return allEmployees.subList(fromIndex, toIndex);
+    }
+
+    public long count() {
+        return repository.findAll().size();
     }
 
     public Optional<Employee> getById(Long id) {
@@ -32,9 +46,13 @@ public class EmployeeService {
         Optional<Employee> existing = getById(id);
         if (existing.isPresent()) {
             Employee updatedEmployee = existing.get();
-            updatedEmployee.setName(employee.getName());
+            updatedEmployee.setFirstName(employee.getFirstName());
+            updatedEmployee.setLastName(employee.getLastName());
             updatedEmployee.setEmail(employee.getEmail());
+            updatedEmployee.setPhone(employee.getPhone());
             updatedEmployee.setDepartment(employee.getDepartment());
+            updatedEmployee.setSalary(employee.getSalary());
+            updatedEmployee.setJoiningDate(employee.getJoiningDate());
             return repository.save(updatedEmployee);
         }
         return null;

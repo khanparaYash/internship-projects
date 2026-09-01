@@ -2,7 +2,6 @@ package in.yashKhanpara.Project_2_Employee_Management.repository;
 
 import in.yashKhanpara.Project_2_Employee_Management.entity.Employee;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
