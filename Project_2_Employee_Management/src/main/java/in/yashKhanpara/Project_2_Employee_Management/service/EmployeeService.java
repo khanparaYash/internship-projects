@@ -1,11 +1,13 @@
 package in.yashKhanpara.Project_2_Employee_Management.service;
 
 import in.yashKhanpara.Project_2_Employee_Management.entity.Employee;
+import in.yashKhanpara.Project_2_Employee_Management.entity.EmployeeDto;
+import in.yashKhanpara.Project_2_Employee_Management.exception.EmployeeNotFoundException;
 import in.yashKhanpara.Project_2_Employee_Management.repository.EmployeeRepository;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -16,11 +18,13 @@ public class EmployeeService {
 
     }
 
-    public Employee create(Employee employee) {
-        return repository.save(employee);
+    public EmployeeDto create(EmployeeDto dto) {
+        Employee employee = dto.toEntity();
+        Employee saved = repository.save(employee);
+        return EmployeeDto.fromEntity(saved);
     }
 
-    public List<Employee> getAll(int page, int size) {
+    public List<EmployeeDto> getAll(int page, int size) {
         if (page < 0) {
             throw new IllegalArgumentException("Page index must not be negative");
         }
@@ -31,34 +35,41 @@ public class EmployeeService {
         List<Employee> allEmployees = repository.findAll();
         int fromIndex = Math.min(page * size, allEmployees.size());
         int toIndex = Math.min(fromIndex + size, allEmployees.size());
-        return allEmployees.subList(fromIndex, toIndex);
+        return allEmployees.subList(fromIndex, toIndex).stream()
+                .map(EmployeeDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public long count() {
         return repository.findAll().size();
     }
 
-    public Optional<Employee> getById(Long id) {
-        return repository.findById(id);
+    public EmployeeDto getById(Long id) {
+        return repository.findById(id)
+                .map(EmployeeDto::fromEntity)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
     }
 
-    public Employee update(Long id, Employee employee) {
-        Optional<Employee> existing = getById(id);
-        if (existing.isPresent()) {
-            Employee updatedEmployee = existing.get();
-            updatedEmployee.setFirstName(employee.getFirstName());
-            updatedEmployee.setLastName(employee.getLastName());
-            updatedEmployee.setEmail(employee.getEmail());
-            updatedEmployee.setPhone(employee.getPhone());
-            updatedEmployee.setDepartment(employee.getDepartment());
-            updatedEmployee.setSalary(employee.getSalary());
-            updatedEmployee.setJoiningDate(employee.getJoiningDate());
-            return repository.save(updatedEmployee);
-        }
-        return null;
+    public EmployeeDto update(Long id, EmployeeDto dto) {
+        Employee existing = repository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+
+        existing.setFirstName(dto.getFirstName());
+        existing.setLastName(dto.getLastName());
+        existing.setEmail(dto.getEmail());
+        existing.setPhone(dto.getPhone());
+        existing.setDepartment(dto.getDepartment());
+        existing.setSalary(dto.getSalary());
+        existing.setJoiningDate(dto.getJoiningDate());
+        Employee saved = repository.save(existing);
+        return EmployeeDto.fromEntity(saved);
     }
 
     public void delete(Long id) {
+        boolean present = repository.findById(id).isPresent();
+        if (!present) {
+            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+        }
         repository.deleteById(id);
     }
 

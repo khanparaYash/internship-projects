@@ -1,7 +1,8 @@
 package in.yashKhanpara.Project_2_Employee_Management.controller;
 
-import in.yashKhanpara.Project_2_Employee_Management.entity.Employee;
+import in.yashKhanpara.Project_2_Employee_Management.entity.EmployeeDto;
 import in.yashKhanpara.Project_2_Employee_Management.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -21,25 +27,38 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @Operation(summary = "Create a new employee", description = "Create a new employee record")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Employee created", content = @Content(schema = @Schema(implementation = EmployeeDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        Employee savedEmployee = employeeService.create(employee);
+    public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody EmployeeDto employeeDto) {
+        EmployeeDto savedEmployee = employeeService.create(employeeDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
+    @Operation(summary = "Get employee by id", description = "Retrieve an employee by its id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = EmployeeDto.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.getById(id);
-        return employee.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<EmployeeDto> getEmployeeById(@Parameter(description = "Employee id", required = true) @PathVariable Long id) {
+        EmployeeDto employee = employeeService.getById(id);
+        return ResponseEntity.ok(employee);
     }
 
+    @Operation(summary = "List employees", description = "Return a paginated list of employees")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = EmployeeDto.class)))
+    })
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllEmployees(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "Page index (zero-based)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size) {
 
-        List<Employee> employees = employeeService.getAll(page, size);
+        List<EmployeeDto> employees = employeeService.getAll(page, size);
         long totalElements = employeeService.count();
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
@@ -53,21 +72,24 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update employee", description = "Update an existing employee by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employee updated", content = @Content(schema = @Schema(implementation = EmployeeDto.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        Employee updatedEmployee = employeeService.update(id, employee);
-        if (updatedEmployee == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<EmployeeDto> updateEmployee(@Parameter(description = "Employee id", required = true) @PathVariable Long id, @Valid @RequestBody EmployeeDto employeeDto) {
+        EmployeeDto updatedEmployee = employeeService.update(id, employeeDto);
         return ResponseEntity.ok(updatedEmployee);
     }
 
+    @Operation(summary = "Delete employee", description = "Delete an employee by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Deleted"),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        if (employeeService.getById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
+    public ResponseEntity<Void> deleteEmployee(@Parameter(description = "Employee id", required = true) @PathVariable Long id) {
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
     }

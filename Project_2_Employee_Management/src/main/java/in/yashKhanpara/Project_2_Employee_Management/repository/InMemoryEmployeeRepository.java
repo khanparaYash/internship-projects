@@ -1,6 +1,7 @@
 package in.yashKhanpara.Project_2_Employee_Management.repository;
 
 import in.yashKhanpara.Project_2_Employee_Management.entity.Employee;
+import in.yashKhanpara.Project_2_Employee_Management.exception.EmployeeAlreadyExistsException;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,26 @@ public class InMemoryEmployeeRepository implements EmployeeRepository{
 
     @Override
     public Employee save(Employee employee) {
+
+        boolean emailExists = employees.values()
+                .stream()
+                .anyMatch(e -> e.getEmail().equalsIgnoreCase(employee.getEmail()));
+
+        if (emailExists) {
+            throw new EmployeeAlreadyExistsException(
+                    "Employee with email " + employee.getEmail() + " already exists"
+            );
+        }
+
+        boolean phoneExists = employees.values()
+                .stream()
+                .anyMatch(e -> e.getPhone().equals(employee.getPhone()));
+
+        if (phoneExists) {
+            throw new EmployeeAlreadyExistsException(
+                    "Employee with phone " + employee.getPhone() + " already exists"
+            );
+        }
         if (employee.getId() == null) {
             employee.setId(idCounter++);
         }
