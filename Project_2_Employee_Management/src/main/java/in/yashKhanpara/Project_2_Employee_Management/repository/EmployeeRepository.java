@@ -57,7 +57,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         (
             :department IS NULL
             OR
-            LOWER(d.name) = LOWER(:department)
+            LOWER(d.name) LIKE LOWER(CONCAT('%', :department, '%'))
         )
         AND e.active = true
     """)
