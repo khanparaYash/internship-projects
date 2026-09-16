@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <style>
+    .entity { fill:#f8f9fa; stroke:#343a40; stroke-width:2 }
+    .title { font: bold 18px Arial; fill:#343a40 }
+    .field { font: 14px Arial; fill:#212529 }
+    .pk { font-weight:bold }
+  </style>
+
+  <!-- Employee entity box -->
+  <rect x="50" y="40" width="300" height="260" rx="6" ry="6" class="entity" />
+  <text x="65" y="70" class="title">Employee</text>
+
+  <line x1="50" y1="86" x2="350" y2="86" stroke="#343a40" stroke-width="1" />
+
+  <text x="65" y="110" class="field pk">id : Long (PK)</text>
+  <text x="65" y="135" class="field">firstName : String</text>
+  <text x="65" y="160" class="field">lastName : String</text>
+  <text x="65" y="185" class="field">email : String (unique)</text>
+  <text x="65" y="210" class="field">phone : String (unique)</text>
+  <text x="65" y="235" class="field">department : String</text>
+  <text x="65" y="260" class="field">salary : Double</text>
+  <text x="65" y="285" class="field">joiningDate : LocalDate</text>
+
+  <!-- Small notes -->
+  <text x="380" y="60" class="title">Notes</text>
+  <text x="380" y="90" class="field">- email and phone are unique (DB constraints)</text>
+  <text x="380" y="115" class="field">- Search supports partial name match and</text>
+  <text x="380" y="135" class="field">  case-insensitive department filter (AND)</text>
+
+  <!-- simple DB box icon -->
+  <g transform="translate(380,160)">
+    <ellipse cx="80" cy="0" rx="80" ry="18" fill="#e9ecef" stroke="#343a40" />
+    <rect x="0" y="0" width="160" height="60" fill="#f8f9fa" stroke="#343a40" />
+    <ellipse cx="80" cy="60" rx="80" ry="18" fill="#e9ecef" stroke="#343a40" />
+    <text x="36" y="36" class="field">employee_db</text>
+  </g>
+
+</svg>
