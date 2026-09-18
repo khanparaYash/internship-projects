@@ -1,52 +1,42 @@
-# Banking System Console Application
+# Banking Console Application
 
-A Java-based console banking system for creating accountFactories, performing transactions, checking balances, viewing history, transferring funds, and managing an admin dashboard.
+A Java-based console banking system that simulates everyday banking operations such as account creation, secure login, deposits, withdrawals, transfers, transaction history, and admin analytics.
 
-## Project Overview
+## Overview
 
-This project simulates a basic banking portal with:
-- Savings and current account support
-- Secure customer login
-- Deposit, withdrawal, transfer, and balance viewing
-- Transaction history tracking
-- Password change support
-- Admin analytics for bank-wide summaries
+This project is built as a beginner-friendly banking application using core Java concepts such as object-oriented programming, collections, custom exceptions, and a console-based menu-driven interface. It demonstrates a layered design with models, repositories, factories, services, and utility classes.
 
 ## Features
 
-- Create a new bank account with either:
-  - Saving Account
-  - Current Account
-- Login using account number and password
-- Deposit money into the account
-- Withdraw money with validation
-- Check current account balance
+- Create a new savings or current account
+- Secure customer login with account number and password
+- Deposit money into an account
+- Withdraw money with validation checks
+- Check current balance
 - View transaction history
 - Change account password
-- Transfer money to another account
-- Admin login with dashboard features:
-  - Total bank holdings
-  - Top 3 richest account holders
-  - Top 5 balances
-  - Account count by type
-- Generate unique account numbers automatically
-- Colored console interface for better readability
+- Transfer funds to another account
+- Admin dashboard with bank statistics
+- Auto-generated account numbers
+- Colorized console output for better UX
 
 ## Tech Stack
 
 - Java SE
 - Object-Oriented Programming (OOP)
-- Console-based UI
-- Collections and Streams API
+- Console-based menu-driven interface
+- Java Collections and Streams API
+- Custom exception handling
 
 ## Project Structure
 
 ```text
-PROJECT_1/
+project_01_banking_console_app/
 ├── src/
 │   ├── BankingApp.java
 │   ├── enums/
 │   │   ├── AccountMenu.java
+│   │   ├── AccountTypeEnum.java
 │   │   ├── AdminMenu.java
 │   │   └── MainMenu.java
 │   ├── exception/
@@ -54,6 +44,10 @@ PROJECT_1/
 │   │   ├── AuthenticationException.java
 │   │   ├── InsufficientBalanceException.java
 │   │   └── InvalidAmountException.java
+│   ├── factory/
+│   │   ├── AccountFactory.java
+│   │   ├── CurrentAccountFactory.java
+│   │   └── SavingAccountFactory.java
 │   ├── model/
 │   │   ├── Account.java
 │   │   ├── CurrentAccount.java
@@ -63,54 +57,60 @@ PROJECT_1/
 │   │   └── AccountRepo.java
 │   ├── service/
 │   │   └── BankService.java
+│   ├── test/
+│   │   ├── BankServiceCreateAccountValidationTest.java
+│   │   ├── BankServiceCurrentAccountTest.java
+│   │   └── BankServiceSavingAccountTest.java
 │   └── util/
 │       ├── AccountNumberGenerator.java
 │       ├── Color.java
 │       └── SimulateProcessing.java
-├── out/
-├── .idea/
-├── PROJECT 1 – BANKING SYSTEM CONSOLE APPLICATION.docx
-└── README.md
+├── uml-diagram.md
+├── README.md
+├── .gitignore
+├── project_01_banking_console_app.iml
+└── .idea/
 ```
-
 ## How to Run
 
-### Option 1: From the terminal
+### Prerequisites
 
-1. Open a terminal in the project root.
-2. Compile the Java source files.
+* Java JDK 25 or later
+* Git
+* An IDE such as IntelliJ IDEA, Eclipse, or VS Code
 
-For macOS/Linux:
-
-```bash
-javac -d out $(find src -name "*.java")
-```
-
-For Windows PowerShell:
-
-```powershell
-Get-ChildItem -Path .\src -Recurse -Filter *.java | ForEach-Object { $_.FullName } | ForEach-Object { javac -d out $_ }
-```
-
-3. Run the application:
+### Clone the Repository
 
 ```bash
-java -cp out BankingApp
+git clone <repository-url>
+cd project_01_banking_console_app
 ```
 
-If your Java compiler keeps package names in the output directory, use:
+### Run the Application
+
+Open a terminal in the `src` directory:
 
 ```bash
-java -cp out model.BankingApp
+cd src
 ```
 
-If the project is opened in an IDE such as IntelliJ IDEA or VS Code, you can run `BankingApp` directly from the IDE.
+Compile the application:
 
-### Option 2: IntelliJ IDEA
+```bash
+javac BankingApp.java
+```
 
-1. Open the project folder in IntelliJ IDEA.
-2. Locate `src/BankingApp.java`.
-3. Click Run or select the main class `BankingApp`.
+Run the application:
+
+```bash
+java BankingApp
+```
+
+### Run Using an IDE
+
+Alternatively, open the project in your preferred IDE, open `src/BankingApp.java`, and run the `main()` method.
+
+> **Note:** This application uses an in-memory repository, so account data is available only while the application is running.
 
 ## Default Admin Credentials
 
@@ -119,9 +119,9 @@ Username: admin
 Password: admin123
 ```
 
-## Sample Input and Output
+## Example Workflow
 
-### Account creation
+### Create account
 
 ```text
 === BANKING PORTAL ===
@@ -141,7 +141,7 @@ Generated Account Number: 100000
 Successfully created
 ```
 
-### Login and deposit
+### Customer login and transaction
 
 ```text
 Enter account number : 100000
@@ -156,12 +156,6 @@ LogIn successfully Done!
 5. Change Password
 6. Transfer
 7. Logout
-
-Enter your choice: 1
-Enter Amount to Deposit: 5000
-Deposit Successfully Done
-Amount Added: 5000.0
-Updated Balance: $5000.0
 ```
 
 ### Admin dashboard
@@ -179,7 +173,19 @@ Admin login successful.
 5. Logout
 ```
 
-## UML Class Diagram
+## Design Notes
+
+The application follows a simple layered architecture:
+
+- Model layer: Account, SavingAccount, CurrentAccount, Transaction
+- Repository layer: AccountRepo for account storage and lookup
+- Factory layer: AccountFactory implementations for account creation
+- Service layer: BankService for business logic and validation
+- Utility layer: AccountNumberGenerator, Color, SimulateProcessing
+- Entry point: BankingApp for console interaction
+
+## UML Diagram
+
 
 The standalone version is available in [uml-diagram.md](./uml-diagram.md).
 
@@ -278,10 +284,7 @@ classDiagram
     Account ..> InvalidAmountException
     Account ..> InsufficientBalanceException
 ```
+## License
 
-## Notes
-
-- The project stores account data in memory while the application is running.
-- It is intended as a learning and demonstration console-based banking application.
-- It can be extended with file storage, database integration, or a web interface.
+This project is intended for educational and learning purposes.
 

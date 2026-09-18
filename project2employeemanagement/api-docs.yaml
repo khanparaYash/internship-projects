@@ -1,0 +1,291 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8000/api
+  description: Generated server url
+paths:
+  /employees/{id}:
+    get:
+      tags:
+      - employee-controller
+      summary: Get employee by id
+      description: Retrieve an employee by its id
+      operationId: getEmployeeById
+      parameters:
+      - name: id
+        in: path
+        description: Employee id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+    put:
+      tags:
+      - employee-controller
+      summary: Update employee
+      description: Update an existing employee by id
+      operationId: updateEmployee
+      parameters:
+      - name: id
+        in: path
+        description: Employee id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Employee updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+    delete:
+      tags:
+      - employee-controller
+      summary: Delete employee
+      description: Delete an employee by id
+      operationId: deleteEmployee
+      parameters:
+      - name: id
+        in: path
+        description: Employee id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not Found
+  /employees:
+    get:
+      tags:
+      - employee-controller
+      summary: List employees
+      description: Return a paginated list of employees
+      operationId: getAllEmployees
+      parameters:
+      - name: page
+        in: query
+        description: Page index (zero-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+    post:
+      tags:
+      - employee-controller
+      summary: Create a new employee
+      description: Create a new employee record
+      operationId: createEmployee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeRequestDto"
+        required: true
+      responses:
+        "201":
+          description: Employee created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+        "400":
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDto"
+  /employees/search:
+    get:
+      tags:
+      - employee-controller
+      summary: Search employees
+      description: Search employees by name (first or last) and/or department
+      operationId: searchEmployees
+      parameters:
+      - name: name
+        in: query
+        description: Partial name to search (first or last)
+        required: false
+        schema:
+          type: string
+      - name: department
+        in: query
+        description: Department name to filter by
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeResponseDto"
+components:
+  schemas:
+    EmployeeRequestDto:
+      type: object
+      description: Employee request payload used when creating or updating an employee
+      properties:
+        firstName:
+          type: string
+          description: First name of the employee
+          example: Yash
+          maxLength: 50
+          minLength: 2
+        lastName:
+          type: string
+          description: Last name of the employee
+          example: Khanpara
+          maxLength: 50
+          minLength: 2
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: yashkhanpara11@gmail.com
+          minLength: 1
+        phone:
+          type: string
+          description: Phone number
+          example: "8849930662"
+          minLength: 1
+          pattern: "^[6-9]\\d{9}$"
+        department:
+          type: string
+          description: Department name
+          example: Engineering
+          minLength: 1
+        salary:
+          type: number
+          format: double
+          description: Salary in the company's currency
+          example: 50000.0
+          maximum: 10000000
+          minimum: 10000
+        joiningDate:
+          type: string
+          format: date
+          description: Joining date (YYYY-MM-DD)
+          example: 2026-06-15
+      required:
+      - department
+      - email
+      - firstName
+      - joiningDate
+      - lastName
+      - phone
+      - salary
+    EmployeeResponseDto:
+      type: object
+      description: Employee response payload
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier
+          example: 1
+        firstName:
+          type: string
+          description: First name of the employee
+          example: Yash
+          maxLength: 50
+          minLength: 2
+        lastName:
+          type: string
+          description: Last name of the employee
+          example: Khanpara
+          maxLength: 50
+          minLength: 2
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: yashkhanpara11@gmail.com
+          minLength: 1
+        phone:
+          type: string
+          description: Phone number
+          example: "8849930662"
+          minLength: 1
+          pattern: "^[6-9]\\d{9}$"
+        department:
+          type: string
+          description: Department name
+          example: Engineering
+          minLength: 1
+        salary:
+          type: number
+          format: double
+          description: Salary in the company's currency
+          example: 50000.0
+          maximum: 10000000
+          minimum: 10000
+        joiningDate:
+          type: string
+          format: date
+          description: Joining date (YYYY-MM-DD)
+          example: 2026-06-15
+        active:
+          type: boolean
+          description: Active flag indicating whether the employee is active (soft
+            delete)
+          example: true
+      required:
+      - department
+      - email
+      - firstName
+      - joiningDate
+      - lastName
+      - phone
+      - salary
