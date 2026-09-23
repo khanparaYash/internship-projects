@@ -67,7 +67,20 @@ public class Employee {
     }
 
     public void setDepartment(Department department) {
+        if (this.department == department) {
+            return;
+        }
+
+        Department previousDepartment = this.department;
         this.department = department;
+
+        if (previousDepartment != null && previousDepartment.getEmployees() != null) {
+            previousDepartment.getEmployees().remove(this);
+        }
+
+        if (department != null && department.getEmployees() != null && !department.getEmployees().contains(this)) {
+            department.getEmployees().add(this);
+        }
     }
 
     public void setSalary(Double salary) {
