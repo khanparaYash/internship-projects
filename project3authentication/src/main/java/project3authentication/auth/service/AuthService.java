@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project3authentication.auth.dto.RegisterRequestDto;
+import project3authentication.auth.dto.LoginResponseDto;
 import project3authentication.auth.entity.User;
 import project3authentication.exception.UserAlreadyExistsException;
 import project3authentication.auth.repository.UserRepository;
@@ -19,11 +20,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, AuthenticationManager authenticationManager, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, AuthenticationManager authenticationManager,
+                       BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -39,19 +43,14 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String login(String email, String password) {
-
-//        if (!userRepository.existsByEmail(email)) {
-//            throw new UserAlreadyExistsException("Email not found");
-//        }
-//        Optional<User> user = userRepository.findByEmail(email);
-//        if (!passwordEncoder.matches(password, user.get().getPassword())) {
-//            throw new UserAlreadyExistsException("Invalid password");
-//        }
-
+    public LoginResponseDto login(String email, String password) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         if (auth.isAuthenticated()) {
-            return "Login successful";
+            User user = userRepository.findByEmail(email);
+            return new LoginResponseDto(
+                    jwtService.generateToken(user),
+                    "Bearer",
+                    jwtService.getExpirationMs());
         }
         throw new AuthenticationException("Invalid email or password") {
         };

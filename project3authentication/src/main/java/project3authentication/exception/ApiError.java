@@ -1,8 +1,9 @@
 package project3authentication.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-
+@Schema(description = "Standard API error response")
 public class ApiError {
     private final LocalDateTime timestamp;
     private final int status;
