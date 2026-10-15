@@ -2,6 +2,7 @@ package project4ordermanagement.order.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project4ordermanagement.orderevent.service.OrderEventService;
 import project4ordermanagement.exception.InvalidOperationException;
 import project4ordermanagement.exception.PaymentFailedException;
 import project4ordermanagement.exception.ResourceNotFoundException;
@@ -26,12 +27,14 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final PaymentRepository paymentRepository;
     private final OrderMapper orderMapper;
+    private final OrderEventService orderEventService;
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, OrderMapper orderMapper,PaymentRepository paymentRepository) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, OrderMapper orderMapper, PaymentRepository paymentRepository, OrderEventService orderEventService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.paymentRepository=paymentRepository;
         this.orderMapper = orderMapper;
+        this.orderEventService = orderEventService;
     }
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto request) {
@@ -79,6 +82,7 @@ public class OrderService {
             );
         }
         order.setStatus(newStatus);
+        orderEventService.saveEvent(order);
         return orderMapper.toDto(orderRepository.save(order));
     }
     @Transactional
@@ -97,6 +101,7 @@ public class OrderService {
             order.setStatus(OrderStatus.PAID);
             payment.setStatus(PaymentStatus.SUCCESS);
             paymentRepository.save(payment);
+            orderEventService.saveEvent(order);
             orderRepository.save(order);
         }else{
             payment.setStatus(PaymentStatus.FAILED);
@@ -114,6 +119,7 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELLED);
+        orderEventService.saveEvent(order);
         orderRepository.save(order);
     }
 }

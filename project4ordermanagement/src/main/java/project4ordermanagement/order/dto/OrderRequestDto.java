@@ -1,5 +1,6 @@
 package project4ordermanagement.order.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,6 +12,7 @@ public record OrderRequestDto(
         @NotNull(message = "Customer email is required")
         String customerEmail,
         @Schema(description = "Products included in the order")
+        @NotEmpty(message = "Order must contain at least one item")
         List<OrderItemRequestDto> items
 ) {
 }
