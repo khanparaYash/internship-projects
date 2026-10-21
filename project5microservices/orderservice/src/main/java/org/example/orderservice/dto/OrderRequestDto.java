@@ -1,0 +1,18 @@
+package org.example.orderservice.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
+@Schema(description = "Customer and item details used to create an order")
+public record OrderRequestDto(
+        @Schema(description = "Customer email address", example = "customer@example.com")
+        @NotNull(message = "Customer email is required")
+        String customerEmail,
+        @Schema(description = "Products included in the order")
+        @NotEmpty(message = "Order must contain at least one item")
+        List<OrderItemRequestDto> items
+) {
+}
