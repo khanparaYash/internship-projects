@@ -1,6 +1,7 @@
 package org.example.orderservice.config;
 
 
+import feign.FeignException;
 import io.github.resilience4j.common.retry.configuration.RetryConfigCustomizer;
 
 import org.example.orderservice.exception.ServiceUnavailableException;
@@ -14,6 +15,13 @@ public class RetryingConfig {
     public RetryConfigCustomizer catalogRetryCustomizer() {
         return RetryConfigCustomizer.of(
                 "catalogService",
+                builder -> builder.retryOnException(ex -> ex instanceof ServiceUnavailableException fe)
+        );
+    }
+    @Bean
+    public RetryConfigCustomizer paymentRetryCustomizer() {
+        return RetryConfigCustomizer.of(
+                "paymentService",
                 builder -> builder.retryOnException(ex -> ex instanceof ServiceUnavailableException fe)
         );
     }

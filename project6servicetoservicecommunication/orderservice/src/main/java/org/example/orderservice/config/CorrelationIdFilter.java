@@ -1,8 +1,6 @@
 package org.example.orderservice.config;
 
-import feign.FeignException;
 import feign.RequestInterceptor;
-import io.github.resilience4j.retry.RetryConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.UUID;
 
 @Component

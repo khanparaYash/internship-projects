@@ -43,7 +43,6 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto request) throws InterruptedException {
-//        Thread.sleep(6000);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request));
     }
 
@@ -90,6 +89,7 @@ public class ProductController {
     })
     public ResponseEntity<ProductResponseDto> getProductById(
             @Parameter(description = "Product ID", example = "1") @PathVariable Long id) throws InterruptedException {
+        //        Thread.sleep(6000);
         return ResponseEntity.ok(productService.getProductById(id));
     }
 

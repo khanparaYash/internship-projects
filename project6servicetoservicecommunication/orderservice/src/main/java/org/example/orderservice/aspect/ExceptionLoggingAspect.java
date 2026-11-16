@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class ExceptionLoggingAspect {
     @AfterThrowing(pointcut = "execution(* org.example.orderservice.service..*(..))", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
-        log.error("Exception in method: {} | Error: {}", joinPoint.getSignature().toShortString(), exception.getMessage(), exception);
+        log.error("Exception in method: {} | Error: {}", joinPoint.getSignature().toShortString(), exception.getMessage());
     }
 }

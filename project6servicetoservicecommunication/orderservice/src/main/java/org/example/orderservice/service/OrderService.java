@@ -27,13 +27,15 @@ public class OrderService {
     // private final PaymentRepository paymentRepository;
     private final OrderMapper orderMapper;
     private final CatalogClientService catalogClientService;
+    private final PaymentClientService paymentClientService;
 
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, OrderMapper orderMapper, CatalogClientService catalogClientService) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, OrderMapper orderMapper, CatalogClientService catalogClientService, PaymentClientService paymentClientService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderMapper = orderMapper;
         this.catalogClientService = catalogClientService;
+        this.paymentClientService = paymentClientService;
     }
 
     @Transactional
@@ -88,6 +90,9 @@ public class OrderService {
         return orderMapper.toDto(orderRepository.save(order));
     }
 
+
+    //isolation DEFAULT -  multiple transaction at same time
+    //propagation REQUIRED - one transaction call another
     @Transactional
     public void processPayment(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
@@ -95,18 +100,15 @@ public class OrderService {
         if (order.getStatus() != OrderStatus.CREATED) {
             throw new InvalidOperationException("Payment can only be processed for orders in CREATED status");
         }
-//        boolean isPaid = ThreadLocalRandom.current().nextBoolean();
-//        Payment payment=new Payment();
-//        payment.setOrderId(order);
-//        if(isPaid){
-        order.setStatus(OrderStatus.PAID);
-//            payment.setStatus(PaymentStatus.SUCCESS);
-//            paymentRepository.save(payment);
+
+        String response = paymentClientService.makePayment(orderId);
+
+        if (response.equals("SUCCESS")) {
+            order.setStatus(OrderStatus.PAID);
+        }
 //            orderEventService.saveEvent(order);
         orderRepository.save(order);
 //        }else{
-//            payment.setStatus(PaymentStatus.FAILED);
-//            paymentRepository.save(payment);
 //            throw new PaymentFailedException("Payment Failed");
 //        }
     }

@@ -60,6 +60,12 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.NOT_FOUND, error.substring(error.indexOf("\"message\":\"") + 11, error.lastIndexOf("\",\"path\"")), request.getRequestURI());
     }
 
+    @ExceptionHandler(FeignException.FeignClientException.class)
+    public ResponseEntity<ApiError> handleClientException(FeignException.FeignClientException ex, HttpServletRequest request) {
+        String error = ex.contentUTF8();
+        return buildError(HttpStatus.PAYMENT_REQUIRED, error.substring(error.indexOf("\"message\":\"") + 11, error.lastIndexOf("\",\"path\"")), request.getRequestURI());
+    }
+
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ApiError> handleFeignException(FeignException ex, HttpServletRequest request) {
         return buildError(HttpStatus.SERVICE_UNAVAILABLE, "Catalog Service is unavailable from global", request.getRequestURI());
