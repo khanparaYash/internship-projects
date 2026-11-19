@@ -1,6 +1,8 @@
 package org.example.authservice.exception;
 
+import com.example.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -10,11 +12,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private ResponseEntity<ApiError> buildError(HttpStatus status, String error, String message, String path) {
-        ApiError apiError = new ApiError(LocalDateTime.now(), status.value(), error, message, path);
+        ApiError apiError = new ApiError();
+        apiError.setError(error);
+        apiError.setMessage(message);
+        apiError.setPath(path);
+        apiError.setTimestamp(OffsetDateTime.now());
+        apiError.setStatus(status.value());
+
         return ResponseEntity.status(status).body(apiError);
     }
 

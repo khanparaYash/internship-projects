@@ -1,9 +1,9 @@
 package org.example.catalogservice.product.mapper;
 
+import com.example.dto.ProductPageResponseDto;
+import com.example.dto.ProductRequestDto;
+import com.example.dto.ProductResponseDto;
 import org.example.catalogservice.category.entity.Category;
-import org.example.catalogservice.product.dto.ProductPageResponseDto;
-import org.example.catalogservice.product.dto.ProductRequestDto;
-import org.example.catalogservice.product.dto.ProductResponseDto;
 import org.example.catalogservice.product.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

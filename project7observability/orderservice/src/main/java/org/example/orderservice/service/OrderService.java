@@ -1,9 +1,10 @@
 package org.example.orderservice.service;
 
+import com.example.dto.OrderItemRequestDto;
+import com.example.dto.OrderRequestDto;
+import com.example.dto.OrderResponseDto;
 import org.example.orderservice.aspect.Auditable;
-import org.example.orderservice.dto.OrderItemRequestDto;
-import org.example.orderservice.dto.OrderRequestDto;
-import org.example.orderservice.dto.OrderResponseDto;
+
 import org.example.orderservice.dto.ProductSummaryDto;
 import org.example.orderservice.entity.Order;
 import org.example.orderservice.entity.OrderItem;
@@ -42,23 +43,23 @@ public class OrderService {
     @Auditable(action = "CREATE_ORDER")
     public OrderResponseDto createOrder(OrderRequestDto request) {
         Order newOrder = new Order();
-        newOrder.setCustomerEmail(request.customerEmail());
+        newOrder.setCustomerEmail(request.getCustomerEmail());
         int totalAmount = 0;
         Order order = orderRepository.save(newOrder);
 
-        for (OrderItemRequestDto item : request.items()) {
+        for (OrderItemRequestDto item : request.getItems()) {
             //send request to product service to check if the product is available and get the price
-            ProductSummaryDto product = catalogClientService.getProduct(item.productId());
+            ProductSummaryDto product = catalogClientService.getProduct(item.getProductId());
 
-            if (item.quantity() > product.quantity()) {
-                throw new InsufficientStockException("Insufficient quantity for product ID: " + item.productId());
+            if (item.getQuantity() > product.quantity()) {
+                throw new InsufficientStockException("Insufficient quantity for product ID: " + item.getProductId());
             }
 
             OrderItem orderItem = new OrderItem();
-            orderItem.setProductId(item.productId());
-            orderItem.setQuantity(item.quantity());
+            orderItem.setProductId(item.getProductId());
+            orderItem.setQuantity(item.getQuantity());
             orderItem.setUnitPrice(product.price());
-            orderItem.setLineTotal((long) (item.quantity() * product.price()));
+            orderItem.setLineTotal((long) (item.getQuantity() * product.price()));
             totalAmount += orderItem.getLineTotal();
             orderItem.setOrder(order);
             orderItemRepository.save(orderItem);

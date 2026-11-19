@@ -1,12 +1,15 @@
 package org.example.orderservice.controller;
 
+import com.example.api.OrdersApi;
+import com.example.dto.OrderRequestDto;
+import com.example.dto.OrderResponseDto;
+import com.example.dto.UpdateOrderStatusRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.example.orderservice.dto.OrderRequestDto;
-import org.example.orderservice.dto.OrderResponseDto;
-import org.example.orderservice.dto.UpdateOrderStatusRequestDto;
+
+import org.example.orderservice.mapper.OrderMapper;
 import org.example.orderservice.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,54 +18,42 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/orders")
-
-@Tag(name = "Orders", description = "Create, retrieve, update, pay for, and cancel orders")
-public class OrderController {
+public class OrderController implements OrdersApi {
 
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderMapper orderMapper) {
         this.orderService = orderService;
+        this.orderMapper = orderMapper;
     }
 
-    @PostMapping
-    @Operation(summary = "Create an order")
-    public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderRequestDto request) {
+   @Override
+    public ResponseEntity<OrderResponseDto> createOrder(OrderRequestDto request) {
         return ResponseEntity.status(201).body(orderService.createOrder(request));
     }
 
-    @GetMapping("/{orderId}")
-    @Operation(summary = "Get an order by ID")
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long orderId) {
+   @Override
+    public ResponseEntity<OrderResponseDto> getOrderById(Long orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
-    @GetMapping
-    @Operation(summary = "List all orders")
+    @Override
     public ResponseEntity<List<OrderResponseDto>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @PatchMapping("/{orderId}/status")
-    @Operation(summary = "Update an order's status")
-    public ResponseEntity<OrderResponseDto> updateStatus(
-            @PathVariable Long orderId,
-            @Valid @RequestBody UpdateOrderStatusRequestDto request
-    ) {
-        return  ResponseEntity.ok(orderService.updateOrderStatus(orderId, request.status()));
+    @Override
+    public ResponseEntity<OrderResponseDto> updateStatus(Long orderId, UpdateOrderStatusRequestDto request) {
+        return  ResponseEntity.ok(orderService.updateOrderStatus(orderId, orderMapper.mapDtoToEntity(request.getStatus()) ));
     }
-
-
-    @PostMapping("/{orderId}/payment")
-    @Operation(summary = "Process payment for an order")
-    public ResponseEntity<String> payment(@PathVariable Long orderId) {
+    @Override
+    public ResponseEntity<String> payment( Long orderId) {
         orderService.processPayment(orderId);
         return ResponseEntity.ok( "Payment processed successfully for order " + orderId);
     }
 
-    @Operation(summary = "Cancel an order")
-    @PostMapping("/{orderId}/cancel")
+    @Override
     public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.ok("Order cancelled successfully");

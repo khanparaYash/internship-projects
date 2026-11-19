@@ -1,11 +1,13 @@
 package org.example.catalogservice.product.service;
 
+import com.example.dto.ProductRequestDto;
+import com.example.dto.ProductResponseDto;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.catalogservice.category.entity.Category;
 import org.example.catalogservice.category.repository.CategoryRepository;
 import org.example.catalogservice.exception.ResourceNotFoundException;
-import org.example.catalogservice.product.dto.ProductRequestDto;
-import org.example.catalogservice.product.dto.ProductResponseDto;
+
 import org.example.catalogservice.product.entity.Product;
 import org.example.catalogservice.product.mapper.ProductMapper;
 import org.example.catalogservice.product.repository.ProductRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
+@Slf4j
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
@@ -30,8 +33,8 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto request) {
-        Category category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.categoryId()));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
 
         Product product = productMapper.toEntity(request);
         product.setCategory(category);
@@ -45,8 +48,8 @@ public class ProductService {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
-        Category category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.categoryId()));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
 
         Product updated = productMapper.toEntity(request);
         // preserve id and any other fields from existing as needed
@@ -65,7 +68,7 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ProductResponseDto getProductById(Long id) throws InterruptedException {
+    public ProductResponseDto getProductById(Long id) {
 //        Thread.sleep(6000);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));

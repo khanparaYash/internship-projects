@@ -156,10 +156,47 @@
             <version>1.6.3</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.8.0</version>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+
+                        <configuration>
+
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.yaml
+                            </inputSpec>
+
+                            <generatorName>spring</generatorName>
+
+                            <apiPackage>com.example.api</apiPackage>
+                            <modelPackage>com.example.dto</modelPackage>
+
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                            </configOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

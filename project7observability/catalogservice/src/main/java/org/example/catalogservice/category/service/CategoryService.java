@@ -1,8 +1,9 @@
 package org.example.catalogservice.category.service;
 
+import com.example.dto.CategoryRequestDto;
+import com.example.dto.CategoryResponseDto;
 import jakarta.transaction.Transactional;
-import org.example.catalogservice.category.dto.CategoryRequestDto;
-import org.example.catalogservice.category.dto.CategoryResponseDto;
+
 import org.example.catalogservice.category.entity.Category;
 import org.example.catalogservice.category.mapper.CategoryMapper;
 
@@ -26,7 +27,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto createCategory(CategoryRequestDto request) {
-        if (categoryRepository.existsByName(request.name())) {
+        if (categoryRepository.existsByName(request.getName())) {
             throw new IllegalArgumentException("Category already exists");
         }
 

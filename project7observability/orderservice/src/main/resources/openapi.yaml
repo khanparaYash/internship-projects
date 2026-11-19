@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8002/api/v1
+    description: Generated server url
+security:
+  - bearerAuth: []
+tags:
+  - name: Orders
+    description: "Create, retrieve, update, pay for, and cancel orders"
+
+paths:
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: List all orders
+      operationId: getAllOrders
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderResponseDto"
+    post:
+      tags:
+        - Orders
+      summary: Create an order
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+  /orders/{orderId}/payment:
+    post:
+      tags:
+        - Orders
+      summary: Process payment for an order
+      operationId: payment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /orders/{orderId}/cancel:
+    post:
+      tags:
+        - Orders
+      summary: Cancel an order
+      operationId: cancelOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /orders/{orderId}/status:
+    patch:
+      tags:
+        - Orders
+      summary: Update an order's status
+      operationId: updateStatus
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrderStatusRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+  /orders/{orderId}:
+    get:
+      tags:
+        - Orders
+      summary: Get an order by ID
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+
+
+components:
+  schemas:
+    OrderItemRequestDto:
+      type: object
+      description: Product and pricing details for an order item
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Product identifier
+          example: 101
+          minimum: 1
+        quantity:
+          type: integer
+          format: int32
+          description: Number of units
+          example: 2
+          minimum: 1
+      required:
+        - productId
+        - quantity
+    OrderRequestDto:
+      type: object
+      description: Customer and item details used to create an order
+      properties:
+        customerEmail:
+          type: string
+          description: Customer email address
+          example: customer@example.com
+        items:
+          type: array
+          description: Products included in the order
+          items:
+            $ref: "#/components/schemas/OrderItemRequestDto"
+          minItems: 1
+      required:
+        - customerEmail
+    OrderItemResponseDto:
+      type: object
+      description: Product details and calculated totals for an order item
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+        unitPrice:
+          type: integer
+          format: int32
+          minimum: 0
+        lineTotal:
+          type: integer
+          format: int64
+
+    OrderStatus:
+      type: string
+      enum:
+        - CREATED
+        - PAID
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+    OrderResponseDto:
+      type: object
+      description: Order details returned by the API
+      properties:
+        id:
+          type: integer
+          format: int64
+        customerEmail:
+          type: string
+        status:
+            $ref: "#/components/schemas/OrderStatus"
+        totalAmount:
+          type: integer
+          format: int32
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItemResponseDto"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UpdateOrderStatusRequestDto:
+      type: object
+      description: Requested order status
+      properties:
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+      required:
+        - status
+
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      name: bearerAuth
+      scheme: bearer
+      bearerFormat: JWT

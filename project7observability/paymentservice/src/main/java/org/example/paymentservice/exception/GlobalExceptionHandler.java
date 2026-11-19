@@ -36,6 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
+
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong", request.getRequestURI());
     }
 }

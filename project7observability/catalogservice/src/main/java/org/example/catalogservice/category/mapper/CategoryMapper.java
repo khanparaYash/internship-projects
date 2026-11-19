@@ -1,7 +1,8 @@
 package org.example.catalogservice.category.mapper;
 
-import org.example.catalogservice.category.dto.CategoryRequestDto;
-import org.example.catalogservice.category.dto.CategoryResponseDto;
+
+import com.example.dto.CategoryRequestDto;
+import com.example.dto.CategoryResponseDto;
 import org.example.catalogservice.category.entity.Category;
 import org.example.catalogservice.product.mapper.ProductMapper;
 import org.mapstruct.Mapper;
